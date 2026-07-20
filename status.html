@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ตรวจสอบสถานะใบคำร้อง</title>
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Mitr:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family: 'Kanit', 'Segoe UI', sans-serif;
+}
+
+body{
+    background: linear-gradient(135deg,#ffffff,#fff5f5,#ffe9e9);
+    min-height:100vh;
+    color:#2b0000;
+    overflow-x:hidden;
+    position:relative;
+}
+
+body::before{
+    content:"";
+    position:absolute;
+    width:400px;
+    height:400px;
+    background:rgba(255,0,0,0.12);
+    border-radius:50%;
+    top:-150px;
+    left:-100px;
+    filter: blur(120px);
+    animation: blobMove1 12s ease-in-out infinite;
+}
+
+body::after{
+    content:"";
+    position:absolute;
+    width:400px;
+    height:400px;
+    background:rgba(255,0,0,0.12);
+    border-radius:50%;
+    bottom:-150px;
+    right:-100px;
+    filter: blur(120px);
+    animation: blobMove2 14s ease-in-out infinite;
+}
+
+@keyframes blobMove1{
+    0%,100%{ transform: translate(0,0) scale(1); }
+    50%{ transform: translate(60px,40px) scale(1.15); }
+}
+
+@keyframes blobMove2{
+    0%,100%{ transform: translate(0,0) scale(1); }
+    50%{ transform: translate(-50px,-30px) scale(1.1); }
+}
+
+@keyframes fadeIn{
+    from{ opacity:0; }
+    to{ opacity:1; }
+}
+
+@keyframes fadeInUp{
+    from{ opacity:0; transform: translateY(20px); }
+    to{ opacity:1; transform: translateY(0); }
+}
+
+@keyframes popIn{
+    from{ opacity:0; transform: scale(0.9); }
+    to{ opacity:1; transform: scale(1); }
+}
+
+@keyframes shake{
+    10%,90%{ transform: translateX(-1px); }
+    20%,80%{ transform: translateX(2px); }
+    30%,50%,70%{ transform: translateX(-4px); }
+    40%,60%{ transform: translateX(4px); }
+}
+
+@keyframes dotPop{
+    from{ transform: scale(0); }
+    to{ transform: scale(1); }
+}
+
+.topbar{
+    position:relative;
+    z-index:1;
+    display:flex;
+    align-items:center;
+    gap:15px;
+    padding:20px 40px;
+    background:#ffffffcc;
+    border-bottom:1px solid rgba(255,0,0,0.15);
+    backdrop-filter: blur(10px);
+    animation: fadeIn 0.6s ease-out;
+}
+
+.topbar img{
+    width:50px;
+    height:50px;
+    border-radius:50%;
+    transition: transform 0.4s ease;
+}
+
+.topbar img:hover{
+    transform: rotate(360deg);
+}
+
+.topbar h2{
+    font-family:'Mitr', sans-serif;
+    font-size:18px;
+    font-weight:500;
+    color:#2b0000;
+}
+
+.back-link{
+    margin-left:auto;
+    color:#b30000;
+    text-decoration:none;
+    font-weight:500;
+    font-size:15px;
+}
+
+.back-link:hover{
+    text-decoration:underline;
+}
+
+.container{
+    position:relative;
+    z-index:1;
+    max-width:700px;
+    margin:40px auto;
+    padding:0 20px 60px;
+}
+
+.page-title{
+    text-align:center;
+    margin-bottom:30px;
+    opacity:0;
+    animation: fadeInUp 0.6s ease-out 0.1s forwards;
+}
+
+.page-title h1{
+    font-family:'Mitr', sans-serif;
+    font-size:28px;
+    color:#d90000;
+    font-weight:600;
+}
+
+.page-title p{
+    color:#8a2b2b;
+    margin-top:8px;
+}
+
+.search-card{
+    background:#ffffff;
+    border:1px solid rgba(255,0,0,0.15);
+    border-radius:20px;
+    padding:30px 35px;
+    box-shadow:0 8px 30px rgba(179,0,0,0.08);
+    opacity:0;
+    animation: fadeInUp 0.6s ease-out 0.2s forwards;
+}
+
+.search-row{
+    display:flex;
+    gap:12px;
+}
+
+.search-row input{
+    flex:1;
+    padding:13px 16px;
+    border-radius:10px;
+    border:1px solid #f0c9c9;
+    background:#fffafa;
+    color:#2b0000;
+    font-family:'Kanit', sans-serif;
+    font-size:15px;
+    outline:none;
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+
+.search-row input:focus{
+    border-color:#ff2d2d;
+    box-shadow:0 0 0 3px rgba(255,45,45,0.12);
+    transform: translateY(-1px);
+}
+
+.search-hint{
+    font-size:12.5px;
+    color:#b08080;
+    margin-top:8px;
+}
+
+.btn{
+    display:inline-block;
+    padding:13px 28px;
+    border-radius:10px;
+    text-decoration:none;
+    font-weight:bold;
+    cursor:pointer;
+    border:none;
+    font-family:'Kanit', sans-serif;
+    font-size:15px;
+    white-space:nowrap;
+    position:relative;
+    overflow:hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn:hover{
+    transform: translateY(-3px);
+}
+
+.btn:active{
+    transform: translateY(0);
+}
+
+.ripple{
+    position:absolute;
+    border-radius:50%;
+    background:rgba(255,255,255,0.55);
+    transform:scale(0);
+    animation: rippleEffect 0.6s ease-out;
+    pointer-events:none;
+}
+
+@keyframes rippleEffect{
+    to{ transform:scale(3); opacity:0; }
+}
+
+.btn-primary{
+    background:linear-gradient(#ff3b3b,#b00000);
+    color:white;
+    box-shadow:0 4px 15px rgba(179,0,0,0.3);
+}
+
+.btn-primary:disabled{
+    opacity:0.6;
+    cursor:not-allowed;
+}
+
+.error-box{
+    display:none;
+    margin-top:15px;
+    background:#fff0f0;
+    border:1px solid #ffbdbd;
+    color:#b30000;
+    padding:12px 16px;
+    border-radius:10px;
+    font-size:14px;
+}
+
+.error-box.show{
+    display:block;
+    animation: shake 0.4s ease;
+}
+
+/* ----- ผลการตรวจสอบ ----- */
+.result-card{
+    display:none;
+    background:#ffffff;
+    border:1px solid rgba(255,0,0,0.15);
+    border-radius:20px;
+    padding:30px 35px;
+    box-shadow:0 8px 30px rgba(179,0,0,0.08);
+    margin-top:25px;
+}
+
+.result-card.show{
+    display:block;
+    animation: popIn 0.4s ease-out;
+}
+
+.result-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-bottom:20px;
+    padding-bottom:15px;
+    border-bottom:2px solid #ffdcdc;
+}
+
+.result-head h3{
+    font-family:'Mitr', sans-serif;
+    color:#2b0000;
+    font-size:18px;
+    margin-bottom:4px;
+}
+
+.result-head p{
+    color:#8a2b2b;
+    font-size:13.5px;
+}
+
+.status-badge{
+    padding:6px 16px;
+    border-radius:20px;
+    font-size:13px;
+    font-weight:600;
+    white-space:nowrap;
+    animation: popIn 0.4s ease-out 0.1s backwards;
+}
+
+.status-pending{
+    background:#fff4d6;
+    color:#a67a00;
+}
+
+.status-review{
+    background:#dceeff;
+    color:#0066b3;
+}
+
+.status-approved{
+    background:#deffe6;
+    color:#1a8a3e;
+}
+
+.status-rejected{
+    background:#ffe0e0;
+    color:#c00000;
+}
+
+.info-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px 20px;
+    margin-bottom:25px;
+    font-size:14px;
+}
+
+.info-grid .label{
+    color:#8a5050;
+    font-size:12.5px;
+    margin-bottom:2px;
+}
+
+.info-grid .value{
+    color:#2b0000;
+    font-weight:500;
+}
+
+/* ----- timeline ----- */
+.timeline{
+    list-style:none;
+    position:relative;
+    padding-left:30px;
+}
+
+.timeline::before{
+    content:"";
+    position:absolute;
+    left:9px;
+    top:6px;
+    bottom:6px;
+    width:2px;
+    background:#f0d0d0;
+}
+
+.timeline li{
+    position:relative;
+    padding-bottom:22px;
+    opacity:0;
+    animation: fadeInUp 0.4s ease-out forwards;
+}
+
+.timeline li:last-child{
+    padding-bottom:0;
+}
+
+.timeline .dot{
+    position:absolute;
+    left:-30px;
+    top:2px;
+    width:20px;
+    height:20px;
+    border-radius:50%;
+    background:#e0e0e0;
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:11px;
+    animation: dotPop 0.3s ease-out;
+}
+
+.timeline li.done .dot{
+    background:#2ecc71;
+}
+
+.timeline li.current .dot{
+    background:#ff3b3b;
+    box-shadow:0 0 0 4px rgba(255,45,45,0.15);
+}
+
+.timeline .step-title{
+    font-weight:500;
+    color:#2b0000;
+    font-size:14.5px;
+}
+
+.timeline .step-date{
+    font-size:12.5px;
+    color:#a07070;
+    margin-top:2px;
+}
+
+.timeline li.pending .step-title{
+    color:#b08080;
+}
+
+.footer{
+    position:relative;
+    z-index:1;
+    text-align:center;
+    margin-top:40px;
+    color:#8a2b2b;
+    font-size:14px;
+    padding-bottom:20px;
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+    <img src="cmt-logo.png" alt="โลโก้วิทยาลัย">
+    <h2>วิทยาลัยเทคโนโลยีชลบุรี | ฝ่ายทะเบียน</h2>
+    <a href="index.html" class="back-link"><i class="fa-solid fa-arrow-left"></i> กลับหน้าหลัก</a>
+</div>
+
+<div class="container">
+
+    <div class="page-title">
+        <h1>ตรวจสอบสถานะใบคำร้อง</h1>
+        <p>กรอกเลขที่คำร้อง หรือ รหัสนักศึกษา เพื่อตรวจสอบความคืบหน้า</p>
+    </div>
+
+    <div class="search-card">
+        <div class="search-row">
+            <input type="text" id="searchInput" placeholder="เช่น REQ12345678 หรือ 6512345678">
+            <button class="btn btn-primary" id="searchBtn">
+                <i class="fa-solid fa-magnifying-glass"></i> ตรวจสอบ
+            </button>
+        </div>
+        <div class="search-hint">* ตัวอย่างข้อมูลทดสอบ: REQ10000001 / REQ10000002 / REQ10000003 หรือรหัสนักศึกษา 6512345678</div>
+        <div class="error-box" id="errorBox">ไม่พบข้อมูลคำร้องนี้ในระบบ กรุณาตรวจสอบเลขที่คำร้องอีกครั้ง</div>
+    </div>
+
+    <div class="result-card" id="resultCard">
+        <div class="result-head">
+            <div>
+                <h3 id="resultName">-</h3>
+                <p id="resultRef">-</p>
+            </div>
+            <div class="status-badge" id="statusBadge">-</div>
+        </div>
+
+        <div class="info-grid">
+            <div>
+                <div class="label">ประเภทคำร้อง</div>
+                <div class="value" id="resultType">-</div>
+            </div>
+            <div>
+                <div class="label">วันที่ยื่นคำร้อง</div>
+                <div class="value" id="resultDate">-</div>
+            </div>
+        </div>
+
+        <ul class="timeline" id="timeline"></ul>
+    </div>
+
+    <div class="footer">
+        🎓 ฝ่ายทะเบียน วิทยาลัยเทคโนโลยีชลบุรี | Graduate Request System
+    </div>
+
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    /* ---------- ข้อมูลจำลอง (Mock Data) ---------- 
+       ในระบบจริงข้อมูลนี้ควรดึงมาจากฐานข้อมูล/เซิร์ฟเวอร์ผ่าน API ---------- */
+    const mockDatabase = [
+        {
+            ref: 'REQ10000001',
+            studentId: '6512345678',
+            name: 'สมชาย ใจดี',
+            type: 'ขอใบรับรองสำเร็จการศึกษา',
+            date: '10 ก.ค. 2569',
+            status: 'approved',
+            steps: [
+                { title: 'ยื่นคำร้องเข้าระบบ', date: '10 ก.ค. 2569' },
+                { title: 'เจ้าหน้าที่ตรวจสอบเอกสาร', date: '12 ก.ค. 2569' },
+                { title: 'อนุมัติคำร้อง', date: '15 ก.ค. 2569' },
+                { title: 'พร้อมรับเอกสาร', date: '18 ก.ค. 2569' }
+            ]
+        },
+        {
+            ref: 'REQ10000002',
+            studentId: '6598765432',
+            name: 'สมหญิง ตั้งใจเรียน',
+            type: 'ขอใบระเบียนผลการเรียน (Transcript)',
+            date: '15 ก.ค. 2569',
+            status: 'review',
+            steps: [
+                { title: 'ยื่นคำร้องเข้าระบบ', date: '15 ก.ค. 2569' },
+                { title: 'เจ้าหน้าที่ตรวจสอบเอกสาร', date: '18 ก.ค. 2569' },
+                { title: 'อนุมัติคำร้อง', date: '' },
+                { title: 'พร้อมรับเอกสาร', date: '' }
+            ]
+        },
+        {
+            ref: 'REQ10000003',
+            studentId: '6511112222',
+            name: 'วิชัย รักเรียน',
+            type: 'ขอใบแทนใบประกาศนียบัตร (กรณีสูญหาย)',
+            date: '05 ก.ค. 2569',
+            status: 'rejected',
+            steps: [
+                { title: 'ยื่นคำร้องเข้าระบบ', date: '05 ก.ค. 2569' },
+                { title: 'เจ้าหน้าที่ตรวจสอบเอกสาร', date: '07 ก.ค. 2569' },
+                { title: 'ปฏิเสธคำร้อง (เอกสารไม่ครบถ้วน)', date: '09 ก.ค. 2569' }
+            ]
+        }
+    ];
+
+    const statusInfo = {
+        pending:  { label: 'รอดำเนินการ',      class: 'status-pending'  },
+        review:   { label: 'กำลังตรวจสอบ',     class: 'status-review'   },
+        approved: { label: 'อนุมัติแล้ว',       class: 'status-approved' },
+        rejected: { label: 'ถูกปฏิเสธ',         class: 'status-rejected' }
+    };
+
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn   = document.getElementById('searchBtn');
+    const errorBox    = document.getElementById('errorBox');
+    const resultCard  = document.getElementById('resultCard');
+
+    searchBtn.addEventListener('click', doSearch);
+    searchInput.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') doSearch();
+    });
+
+    function doSearch() {
+        const query = searchInput.value.trim().toUpperCase();
+
+        errorBox.classList.remove('show');
+        resultCard.classList.remove('show');
+
+        if (query === '') {
+            errorBox.textContent = 'กรุณากรอกเลขที่คำร้องหรือรหัสนักศึกษา';
+            errorBox.classList.add('show');
+            return;
+        }
+
+        // จำลองการหน่วงเวลาเหมือนกำลังเรียก API จริง
+        searchBtn.disabled = true;
+        searchBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังตรวจสอบ...';
+
+        setTimeout(function () {
+            const record = mockDatabase.find(function (item) {
+                return item.ref === query || item.studentId === query;
+            });
+
+            searchBtn.disabled = false;
+            searchBtn.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i> ตรวจสอบ';
+
+            if (!record) {
+                errorBox.textContent = 'ไม่พบข้อมูลคำร้องนี้ในระบบ กรุณาตรวจสอบเลขที่คำร้องอีกครั้ง';
+                errorBox.classList.add('show');
+                return;
+            }
+
+            renderResult(record);
+        }, 700);
+    }
+
+    /* ---------- เอฟเฟกต์ ripple ตอนคลิกปุ่ม ---------- */
+    document.querySelectorAll('.btn').forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
+            const rect = btn.getBoundingClientRect();
+            const ripple = document.createElement('span');
+            const size = Math.max(rect.width, rect.height);
+            ripple.className = 'ripple';
+            ripple.style.width = ripple.style.height = size + 'px';
+            ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+            ripple.style.top  = (e.clientY - rect.top - size / 2) + 'px';
+            btn.appendChild(ripple);
+            setTimeout(function () { ripple.remove(); }, 600);
+        });
+    });
+
+    function renderResult(record) {
+        document.getElementById('resultName').textContent = record.name;
+        document.getElementById('resultRef').textContent  = 'เลขที่คำร้อง: ' + record.ref;
+        document.getElementById('resultType').textContent = record.type;
+        document.getElementById('resultDate').textContent = record.date;
+
+        const badge = document.getElementById('statusBadge');
+        const info = statusInfo[record.status];
+        badge.textContent = info.label;
+        badge.className = 'status-badge ' + info.class;
+
+        const timeline = document.getElementById('timeline');
+        timeline.innerHTML = '';
+
+        record.steps.forEach(function (step, index) {
+            const li = document.createElement('li');
+            let stateClass = 'pending';
+            let icon = '';
+
+            if (step.date !== '') {
+                stateClass = 'done';
+                icon = '<i class="fa-solid fa-check"></i>';
+            }
+
+            // ขั้นตอนล่าสุดที่ยังไม่มีวันที่ถัดไป = ขั้นตอนปัจจุบัน (สำหรับสถานะที่ยังไม่จบ)
+            const isLastDone = step.date !== '' &&
+                (index === record.steps.length - 1 || record.steps[index + 1].date === '');
+
+            if (record.status !== 'approved' && record.status !== 'rejected' && isLastDone) {
+                stateClass = 'current';
+                icon = '<i class="fa-solid fa-clock"></i>';
+            }
+
+            if (record.status === 'rejected' && index === record.steps.length - 1) {
+                stateClass = 'current';
+                icon = '<i class="fa-solid fa-xmark"></i>';
+            }
+
+            li.className = stateClass;
+            li.style.animationDelay = (index * 0.12) + 's';
+            li.innerHTML =
+                '<span class="dot">' + icon + '</span>' +
+                '<div class="step-title">' + step.title + '</div>' +
+                '<div class="step-date">' + (step.date || 'ยังไม่ถึงขั้นตอนนี้') + '</div>';
+
+            timeline.appendChild(li);
+        });
+
+        resultCard.classList.add('show');
+    }
+
+});
+</script>
+
+</body>
+</html>
