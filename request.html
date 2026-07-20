@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>แบบฟอร์มขอยื่นคำร้องใบจบการศึกษา</title>
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Mitr:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family: 'Kanit', 'Segoe UI', sans-serif;
+}
+
+body{
+    background: linear-gradient(135deg,#ffffff,#fff5f5,#ffe9e9);
+    min-height:100vh;
+    color:#2b0000;
+    overflow-x:hidden;
+    position:relative;
+}
+
+body::before{
+    content:"";
+    position:absolute;
+    width:400px;
+    height:400px;
+    background:rgba(255,0,0,0.12);
+    border-radius:50%;
+    top:-150px;
+    left:-100px;
+    filter: blur(120px);
+    animation: blobMove1 12s ease-in-out infinite;
+}
+
+body::after{
+    content:"";
+    position:absolute;
+    width:400px;
+    height:400px;
+    background:rgba(255,0,0,0.12);
+    border-radius:50%;
+    bottom:-150px;
+    right:-100px;
+    filter: blur(120px);
+    animation: blobMove2 14s ease-in-out infinite;
+}
+
+@keyframes blobMove1{
+    0%,100%{ transform: translate(0,0) scale(1); }
+    50%{ transform: translate(60px,40px) scale(1.15); }
+}
+
+@keyframes blobMove2{
+    0%,100%{ transform: translate(0,0) scale(1); }
+    50%{ transform: translate(-50px,-30px) scale(1.1); }
+}
+
+@keyframes fadeInUp{
+    from{ opacity:0; transform: translateY(20px); }
+    to{ opacity:1; transform: translateY(0); }
+}
+
+@keyframes fadeIn{
+    from{ opacity:0; }
+    to{ opacity:1; }
+}
+
+@keyframes popIn{
+    from{ opacity:0; transform: scale(0.85); }
+    to{ opacity:1; transform: scale(1); }
+}
+
+@keyframes shake{
+    10%,90%{ transform: translateX(-1px); }
+    20%,80%{ transform: translateX(2px); }
+    30%,50%,70%{ transform: translateX(-4px); }
+    40%,60%{ transform: translateX(4px); }
+}
+
+.topbar{
+    position:relative;
+    z-index:1;
+    display:flex;
+    align-items:center;
+    gap:15px;
+    padding:20px 40px;
+    background:#ffffffcc;
+    border-bottom:1px solid rgba(255,0,0,0.15);
+    backdrop-filter: blur(10px);
+    animation: fadeIn 0.6s ease-out;
+}
+
+.topbar img{
+    width:50px;
+    height:50px;
+    border-radius:50%;
+    transition: transform 0.4s ease;
+}
+
+.topbar img:hover{
+    transform: rotate(360deg);
+}
+
+.topbar h2{
+    font-family:'Mitr', sans-serif;
+    font-size:18px;
+    font-weight:500;
+    color:#2b0000;
+}
+
+.back-link{
+    margin-left:auto;
+    color:#b30000;
+    text-decoration:none;
+    font-weight:500;
+    font-size:15px;
+}
+
+.back-link:hover{
+    text-decoration:underline;
+}
+
+.container{
+    position:relative;
+    z-index:1;
+    max-width:700px;
+    margin:40px auto;
+    padding:0 20px 60px;
+}
+
+.page-title{
+    text-align:center;
+    margin-bottom:30px;
+    opacity:0;
+    animation: fadeInUp 0.6s ease-out 0.1s forwards;
+}
+
+.page-title h1{
+    font-family:'Mitr', sans-serif;
+    font-size:28px;
+    color:#d90000;
+    font-weight:600;
+}
+
+.page-title p{
+    color:#8a2b2b;
+    margin-top:8px;
+}
+
+.form-card{
+    background:#ffffff;
+    border:1px solid rgba(255,0,0,0.15);
+    border-radius:20px;
+    padding:35px 40px;
+    box-shadow:0 8px 30px rgba(179,0,0,0.08);
+    opacity:0;
+    animation: fadeInUp 0.6s ease-out 0.2s forwards;
+}
+
+.section-title{
+    font-family:'Mitr', sans-serif;
+    color:#b30000;
+    font-size:16px;
+    font-weight:500;
+    margin:25px 0 15px;
+    padding-bottom:8px;
+    border-bottom:2px solid #ffdcdc;
+}
+
+.section-title:first-child{
+    margin-top:0;
+}
+
+.form-group{
+    margin-bottom:18px;
+}
+
+.form-row{
+    display:flex;
+    gap:20px;
+}
+
+.form-row .form-group{
+    flex:1;
+}
+
+label{
+    display:block;
+    font-size:14px;
+    color:#5a2020;
+    margin-bottom:6px;
+    font-weight:500;
+}
+
+label .required{
+    color:#ff2d2d;
+}
+
+input[type="text"],
+input[type="tel"],
+input[type="email"],
+select,
+textarea{
+    width:100%;
+    padding:12px 14px;
+    border-radius:10px;
+    border:1px solid #f0c9c9;
+    background:#fffafa;
+    color:#2b0000;
+    font-family:'Kanit', sans-serif;
+    font-size:15px;
+    outline:none;
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+
+input:focus,
+select:focus,
+textarea:focus{
+    border-color:#ff2d2d;
+    box-shadow:0 0 0 3px rgba(255,45,45,0.12);
+    transform: translateY(-1px);
+}
+
+textarea{
+    resize:vertical;
+    min-height:80px;
+}
+
+.upload-box{
+    border:2px dashed #f0b3b3;
+    border-radius:12px;
+    padding:25px;
+    text-align:center;
+    color:#a05050;
+    background:#fff8f8;
+    cursor:pointer;
+    transition:0.25s;
+}
+
+.upload-box:hover{
+    border-color:#ff2d2d;
+    background:#fff0f0;
+    transform: translateY(-2px);
+}
+
+.upload-box i{
+    font-size:28px;
+    color:#ff2d2d;
+    margin-bottom:8px;
+    display:block;
+}
+
+.upload-hint{
+    font-size:12px;
+    color:#b08080;
+    margin-top:6px;
+}
+
+.checkbox-row{
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    margin-top:20px;
+    font-size:14px;
+    color:#5a2020;
+}
+
+.checkbox-row input{
+    margin-top:3px;
+}
+
+.actions{
+    display:flex;
+    justify-content:center;
+    gap:15px;
+    margin-top:30px;
+}
+
+.btn{
+    display:inline-block;
+    padding:13px 35px;
+    border-radius:10px;
+    text-decoration:none;
+    font-weight:bold;
+    cursor:pointer;
+    border:none;
+    font-family:'Kanit', sans-serif;
+    font-size:15px;
+    position:relative;
+    overflow:hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn:hover{
+    transform: translateY(-3px);
+}
+
+.btn:active{
+    transform: translateY(0);
+}
+
+.ripple{
+    position:absolute;
+    border-radius:50%;
+    background:rgba(255,255,255,0.55);
+    transform:scale(0);
+    animation: rippleEffect 0.6s ease-out;
+    pointer-events:none;
+}
+
+@keyframes rippleEffect{
+    to{ transform:scale(3); opacity:0; }
+}
+
+.btn-primary{
+    background:linear-gradient(#ff3b3b,#b00000);
+    color:white;
+    box-shadow:0 4px 15px rgba(179,0,0,0.3);
+}
+
+.btn-secondary{
+    background:#f5f5f5;
+    color:#555;
+}
+
+.footer{
+    position:relative;
+    z-index:1;
+    text-align:center;
+    margin-top:40px;
+    color:#8a2b2b;
+    font-size:14px;
+    padding-bottom:20px;
+}
+
+.error-msg{
+    display:none;
+    color:#ff2d2d;
+    font-size:12.5px;
+    margin-top:5px;
+}
+
+.form-group.invalid input,
+.form-group.invalid select,
+.form-group.invalid .upload-box{
+    border-color:#ff2d2d;
+    box-shadow:0 0 0 3px rgba(255,45,45,0.12);
+    animation: shake 0.4s ease;
+}
+
+.form-group.invalid .error-msg{
+    display:block;
+}
+
+.char-count{
+    text-align:right;
+    font-size:12px;
+    color:#b08080;
+    margin-top:4px;
+}
+
+.upload-box.has-file{
+    border-style:solid;
+    border-color:#2ecc71;
+    background:#f3fff6;
+}
+
+.upload-box.has-file i{
+    color:#2ecc71;
+}
+
+.file-name{
+    margin-top:8px;
+    font-size:13px;
+    color:#2b0000;
+    font-weight:500;
+    word-break:break-all;
+    animation: popIn 0.3s ease-out;
+}
+
+.file-name .remove-file{
+    color:#ff2d2d;
+    margin-left:8px;
+    cursor:pointer;
+    text-decoration:underline;
+}
+
+.btn-primary:disabled{
+    opacity:0.5;
+    cursor:not-allowed;
+    box-shadow:none;
+}
+
+.modal-overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(43,0,0,0.45);
+    z-index:10;
+    align-items:center;
+    justify-content:center;
+}
+
+.modal-overlay.show{
+    display:flex;
+}
+
+.modal-box{
+    background:#fff;
+    border-radius:18px;
+    padding:40px 35px;
+    text-align:center;
+    max-width:360px;
+    width:90%;
+    box-shadow:0 15px 40px rgba(0,0,0,0.25);
+    animation: popIn 0.35s ease-out;
+}
+
+.modal-box i{
+    font-size:50px;
+    color:#2ecc71;
+    margin-bottom:15px;
+    animation: popIn 0.5s ease-out 0.1s backwards;
+}
+
+.modal-box h3{
+    font-family:'Mitr', sans-serif;
+    color:#2b0000;
+    margin-bottom:8px;
+}
+
+.modal-box p{
+    color:#7a4d4d;
+    font-size:14px;
+    margin-bottom:20px;
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+    <img src="cmt-logo.png" alt="โลโก้วิทยาลัย">
+    <h2>วิทยาลัยเทคโนโลยีชลบุรี | ฝ่ายทะเบียน</h2>
+    <a href="index.html" class="back-link"><i class="fa-solid fa-arrow-left"></i> กลับหน้าหลัก</a>
+</div>
+
+<div class="container">
+
+    <div class="page-title">
+        <h1>แบบฟอร์มขอยื่นคำร้อง</h1>
+        <p>ใบจบการศึกษา — กรุณากรอกข้อมูลให้ครบถ้วน</p>
+    </div>
+
+    <form class="form-card" id="requestForm" novalidate>
+
+        <div class="section-title">ข้อมูลผู้ยื่นคำร้อง</div>
+
+        <div class="form-row">
+            <div class="form-group" id="group-fullname">
+                <label>ชื่อ - นามสกุล <span class="required">*</span></label>
+                <input type="text" id="fullname" placeholder="เช่น สมชาย ใจดี">
+                <div class="error-msg">กรุณากรอกชื่อ-นามสกุล</div>
+            </div>
+            <div class="form-group" id="group-studentid">
+                <label>รหัสนักศึกษา <span class="required">*</span></label>
+                <input type="text" id="studentid" placeholder="เช่น 6512345678">
+                <div class="error-msg">กรุณากรอกรหัสนักศึกษาให้ถูกต้อง (ตัวเลขเท่านั้น)</div>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group" id="group-major">
+                <label>สาขาวิชา <span class="required">*</span></label>
+                <select id="major">
+                    <option value="">-- เลือกสาขาวิชา --</option>
+                    <option>คอมพิวเตอร์ธุรกิจ</option>
+                    <option>การบัญชี</option>
+                    <option>ช่างยนต์</option>
+                    <option>ช่างไฟฟ้ากำลัง</option>
+                    <option>อื่นๆ</option>
+                </select>
+                <div class="error-msg">กรุณาเลือกสาขาวิชา</div>
+            </div>
+            <div class="form-group" id="group-level">
+                <label>ระดับการศึกษา <span class="required">*</span></label>
+                <select id="level">
+                    <option value="">-- เลือกระดับ --</option>
+                    <option>ปวช.</option>
+                    <option>ปวส.</option>
+                </select>
+                <div class="error-msg">กรุณาเลือกระดับการศึกษา</div>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group" id="group-phone">
+                <label>เบอร์โทรศัพท์ <span class="required">*</span></label>
+                <input type="tel" id="phone" placeholder="08X-XXX-XXXX">
+                <div class="error-msg">กรุณากรอกเบอร์โทรศัพท์ 10 หลักให้ถูกต้อง</div>
+            </div>
+            <div class="form-group" id="group-email">
+                <label>อีเมล</label>
+                <input type="email" id="email" placeholder="example@email.com">
+                <div class="error-msg">รูปแบบอีเมลไม่ถูกต้อง</div>
+            </div>
+        </div>
+
+        <div class="section-title">รายละเอียดคำร้อง</div>
+
+        <div class="form-group" id="group-type">
+            <label>ประเภทคำร้องที่ขอยื่น <span class="required">*</span></label>
+            <select id="reqtype">
+                <option value="">-- เลือกประเภท --</option>
+                <option>ขอใบรับรองสำเร็จการศึกษา</option>
+                <option>ขอใบประกาศนียบัตร (ฉบับจริง)</option>
+                <option>ขอใบแทนใบประกาศนียบัตร (กรณีสูญหาย)</option>
+                <option>ขอใบระเบียนผลการเรียน (Transcript)</option>
+            </select>
+            <div class="error-msg">กรุณาเลือกประเภทคำร้อง</div>
+        </div>
+
+        <div class="form-group">
+            <label>หมายเหตุเพิ่มเติม</label>
+            <textarea id="note" maxlength="300" placeholder="ระบุรายละเอียดเพิ่มเติม (ถ้ามี)"></textarea>
+            <div class="char-count"><span id="noteCount">0</span>/300</div>
+        </div>
+
+        <div class="section-title">แนบเอกสารประกอบ</div>
+
+        <div class="form-group" id="group-file">
+            <label>สำเนาบัตรประชาชน / สำเนาทะเบียนบ้าน <span class="required">*</span></label>
+            <div class="upload-box" id="uploadBox">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                <span id="uploadLabel">คลิกเพื่ออัปโหลดไฟล์ หรือ ลากไฟล์มาวางที่นี่</span>
+                <div class="upload-hint">รองรับไฟล์ PDF, JPG, PNG ขนาดไม่เกิน 5MB</div>
+                <div class="file-name" id="fileName" style="display:none;"></div>
+            </div>
+            <input type="file" id="fileInput" accept=".pdf,.jpg,.jpeg,.png" hidden>
+            <div class="error-msg">กรุณาแนบไฟล์เอกสาร (PDF/JPG/PNG ไม่เกิน 5MB)</div>
+        </div>
+
+        <div class="checkbox-row">
+            <input type="checkbox" id="confirm">
+            <label for="confirm">ข้าพเจ้าขอรับรองว่าข้อมูลที่กรอกข้างต้นเป็นความจริงทุกประการ</label>
+        </div>
+
+        <div class="actions">
+            <button type="button" class="btn btn-secondary" id="resetBtn">ยกเลิก</button>
+            <button type="submit" class="btn btn-primary" id="submitBtn">ยื่นคำร้อง</button>
+        </div>
+
+    </form>
+
+    <div class="footer">
+        🎓 ฝ่ายทะเบียน วิทยาลัยเทคโนโลยีชลบุรี | Graduate Request System
+    </div>
+
+</div>
+
+<div class="modal-overlay" id="successModal">
+    <div class="modal-box">
+        <i class="fa-solid fa-circle-check"></i>
+        <h3>ยื่นคำร้องสำเร็จ!</h3>
+        <p id="modalText">ระบบได้รับคำร้องของคุณเรียบร้อยแล้ว เจ้าหน้าที่จะดำเนินการตรวจสอบต่อไป</p>
+        <button type="button" class="btn btn-primary" id="modalCloseBtn">ตกลง</button>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const form         = document.getElementById('requestForm');
+    const fileInput     = document.getElementById('fileInput');
+    const uploadBox      = document.getElementById('uploadBox');
+    const uploadLabel    = document.getElementById('uploadLabel');
+    const fileNameBox    = document.getElementById('fileName');
+    const noteField       = document.getElementById('note');
+    const noteCount       = document.getElementById('noteCount');
+    const submitBtn       = document.getElementById('submitBtn');
+    const resetBtn        = document.getElementById('resetBtn');
+    const successModal    = document.getElementById('successModal');
+    const modalCloseBtn   = document.getElementById('modalCloseBtn');
+    const modalText       = document.getElementById('modalText');
+
+    let selectedFile = null;
+
+    /* ---------- ตัวนับตัวอักษรของหมายเหตุ ---------- */
+    noteField.addEventListener('input', function () {
+        noteCount.textContent = noteField.value.length;
+    });
+
+    /* ---------- คลิกที่กล่องเพื่อเลือกไฟล์ ---------- */
+    uploadBox.addEventListener('click', function () {
+        fileInput.click();
+    });
+
+    /* ---------- รองรับการลากไฟล์มาวาง (Drag & Drop) ---------- */
+    uploadBox.addEventListener('dragover', function (e) {
+        e.preventDefault();
+        uploadBox.style.background = '#fff0f0';
+    });
+
+    uploadBox.addEventListener('dragleave', function () {
+        uploadBox.style.background = '';
+    });
+
+    uploadBox.addEventListener('drop', function (e) {
+        e.preventDefault();
+        uploadBox.style.background = '';
+        if (e.dataTransfer.files.length) {
+            handleFile(e.dataTransfer.files[0]);
+        }
+    });
+
+    fileInput.addEventListener('change', function () {
+        if (fileInput.files.length) {
+            handleFile(fileInput.files[0]);
+        }
+    });
+
+    function handleFile(file) {
+        const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png'];
+        const maxSize = 5 * 1024 * 1024; // 5MB
+
+        if (!allowedTypes.includes(file.type)) {
+            alert('รองรับเฉพาะไฟล์ PDF, JPG, PNG เท่านั้น');
+            fileInput.value = '';
+            return;
+        }
+        if (file.size > maxSize) {
+            alert('ขนาดไฟล์ต้องไม่เกิน 5MB');
+            fileInput.value = '';
+            return;
+        }
+
+        selectedFile = file;
+        uploadBox.classList.add('has-file');
+        uploadLabel.style.display = 'none';
+        fileNameBox.style.display = 'block';
+        fileNameBox.innerHTML =
+            '<i class="fa-solid fa-file-circle-check"></i> ' + file.name +
+            ' (' + (file.size / 1024).toFixed(0) + ' KB)' +
+            ' <span class="remove-file" id="removeFile">ลบไฟล์</span>';
+
+        document.getElementById('removeFile').addEventListener('click', function (e) {
+            e.stopPropagation();
+            removeFile();
+        });
+
+        clearError('group-file');
+    }
+
+    function removeFile() {
+        selectedFile = null;
+        fileInput.value = '';
+        uploadBox.classList.remove('has-file');
+        uploadLabel.style.display = 'inline';
+        fileNameBox.style.display = 'none';
+        fileNameBox.innerHTML = '';
+    }
+
+    /* ---------- ฟังก์ชันช่วยแสดง/ล้าง error ---------- */
+    function showError(groupId) {
+        document.getElementById(groupId).classList.add('invalid');
+    }
+
+    function clearError(groupId) {
+        document.getElementById(groupId).classList.remove('invalid');
+    }
+
+    /* ---------- Validation แบบ real-time เมื่อพิมพ์ ---------- */
+    ['fullname', 'studentid', 'phone', 'email'].forEach(function (id) {
+        document.getElementById(id).addEventListener('input', function () {
+            clearError('group-' + id);
+        });
+    });
+    ['major', 'level', 'reqtype'].forEach(function (id) {
+        document.getElementById(id).addEventListener('change', function () {
+            clearError('group-' + id);
+        });
+    });
+
+    /* ---------- ตรวจสอบข้อมูลก่อนส่งฟอร์ม ---------- */
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        let isValid = true;
+
+        const fullname  = document.getElementById('fullname').value.trim();
+        const studentid = document.getElementById('studentid').value.trim();
+        const major     = document.getElementById('major').value;
+        const level     = document.getElementById('level').value;
+        const phone     = document.getElementById('phone').value.trim();
+        const email     = document.getElementById('email').value.trim();
+        const reqtype   = document.getElementById('reqtype').value;
+        const confirmChecked = document.getElementById('confirm').checked;
+
+        if (fullname === '') { showError('group-fullname'); isValid = false; }
+        else clearError('group-fullname');
+
+        if (!/^[0-9]{5,10}$/.test(studentid)) { showError('group-studentid'); isValid = false; }
+        else clearError('group-studentid');
+
+        if (major === '') { showError('group-major'); isValid = false; }
+        else clearError('group-major');
+
+        if (level === '') { showError('group-level'); isValid = false; }
+        else clearError('group-level');
+
+        if (!/^0[0-9]{9}$/.test(phone.replace(/-/g, ''))) { showError('group-phone'); isValid = false; }
+        else clearError('group-phone');
+
+        if (email !== '' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showError('group-email'); isValid = false; }
+        else clearError('group-email');
+
+        if (reqtype === '') { showError('group-type'); isValid = false; }
+        else clearError('group-type');
+
+        if (!selectedFile) { showError('group-file'); isValid = false; }
+        else clearError('group-file');
+
+        if (!confirmChecked) {
+            alert('กรุณายืนยันว่าข้อมูลที่กรอกเป็นความจริง');
+            isValid = false;
+        }
+
+        if (!isValid) {
+            const firstError = document.querySelector('.form-group.invalid');
+            if (firstError) {
+                firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            return;
+        }
+
+        /* ---------- จำลองการส่งข้อมูล (ยังไม่เชื่อมกับฐานข้อมูลจริง) ---------- */
+        const refNumber = 'REQ' + Date.now().toString().slice(-8);
+        modalText.textContent =
+            'ระบบได้รับคำร้องของคุณ ' + fullname + ' เรียบร้อยแล้ว หมายเลขคำร้อง: ' + refNumber;
+        successModal.classList.add('show');
+    });
+
+    modalCloseBtn.addEventListener('click', function () {
+        successModal.classList.remove('show');
+        form.reset();
+        removeFile();
+        noteCount.textContent = '0';
+        document.querySelectorAll('.form-group').forEach(function (g) {
+            g.classList.remove('invalid');
+        });
+    });
+
+    resetBtn.addEventListener('click', function () {
+        form.reset();
+        removeFile();
+        noteCount.textContent = '0';
+        document.querySelectorAll('.form-group').forEach(function (g) {
+            g.classList.remove('invalid');
+        });
+    });
+
+    /* ---------- เอฟเฟกต์ ripple ตอนคลิกปุ่ม ---------- */
+    document.querySelectorAll('.btn').forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
+            const rect = btn.getBoundingClientRect();
+            const ripple = document.createElement('span');
+            const size = Math.max(rect.width, rect.height);
+            ripple.className = 'ripple';
+            ripple.style.width = ripple.style.height = size + 'px';
+            ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+            ripple.style.top  = (e.clientY - rect.top - size / 2) + 'px';
+            btn.appendChild(ripple);
+            setTimeout(function () { ripple.remove(); }, 600);
+        });
+    });
+
+});
+</script>
+
+</body>
+</html>
