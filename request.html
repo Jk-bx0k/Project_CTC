@@ -229,6 +229,12 @@ textarea:focus{
     transform: translateY(-1px);
 }
 
+select:disabled{
+    background:#f4f4f4;
+    color:#a08a8a;
+    cursor:not-allowed;
+}
+
 textarea{
     resize:vertical;
     min-height:80px;
@@ -471,24 +477,12 @@ textarea{
             </div>
             <div class="form-group" id="group-studentid">
                 <label>รหัสนักศึกษา <span class="required">*</span></label>
-                <input type="text" id="studentid" placeholder="เช่น 6512345678">
-                <div class="error-msg">กรุณากรอกรหัสนักศึกษาให้ถูกต้อง (ตัวเลขเท่านั้น)</div>
+                <input type="text" id="studentid" placeholder="เช่น 69319010111" maxlength="11">
+                <div class="error-msg">กรุณากรอกรหัสนักศึกษาให้ถูกต้อง (ตัวเลข 11 หลัก)</div>
             </div>
         </div>
 
         <div class="form-row">
-            <div class="form-group" id="group-major">
-                <label>สาขาวิชา <span class="required">*</span></label>
-                <select id="major">
-                    <option value="">-- เลือกสาขาวิชา --</option>
-                    <option>คอมพิวเตอร์ธุรกิจ</option>
-                    <option>การบัญชี</option>
-                    <option>ช่างยนต์</option>
-                    <option>ช่างไฟฟ้ากำลัง</option>
-                    <option>อื่นๆ</option>
-                </select>
-                <div class="error-msg">กรุณาเลือกสาขาวิชา</div>
-            </div>
             <div class="form-group" id="group-level">
                 <label>ระดับการศึกษา <span class="required">*</span></label>
                 <select id="level">
@@ -498,19 +492,21 @@ textarea{
                 </select>
                 <div class="error-msg">กรุณาเลือกระดับการศึกษา</div>
             </div>
+            <div class="form-group" id="group-category">
+                <label>ประเภทวิชา <span class="required">*</span></label>
+                <select id="category" disabled>
+                    <option value="">-- เลือกระดับการศึกษาก่อน --</option>
+                </select>
+                <div class="error-msg">กรุณาเลือกประเภทวิชา</div>
+            </div>
         </div>
 
-        <div class="form-row">
-            <div class="form-group" id="group-phone">
-                <label>เบอร์โทรศัพท์ <span class="required">*</span></label>
-                <input type="tel" id="phone" placeholder="08X-XXX-XXXX">
-                <div class="error-msg">กรุณากรอกเบอร์โทรศัพท์ 10 หลักให้ถูกต้อง</div>
-            </div>
-            <div class="form-group" id="group-email">
-                <label>อีเมล</label>
-                <input type="email" id="email" placeholder="example@email.com">
-                <div class="error-msg">รูปแบบอีเมลไม่ถูกต้อง</div>
-            </div>
+        <div class="form-group" id="group-major">
+            <label>สาขาวิชา <span class="required">*</span></label>
+            <select id="major" disabled>
+                <option value="">-- เลือกประเภทวิชาก่อน --</option>
+            </select>
+            <div class="error-msg">กรุณาเลือกสาขาวิชา</div>
         </div>
 
         <div class="section-title">รายละเอียดคำร้อง</div>
@@ -590,7 +586,133 @@ document.addEventListener('DOMContentLoaded', function () {
     const modalCloseBtn   = document.getElementById('modalCloseBtn');
     const modalText       = document.getElementById('modalText');
 
+    const levelSelect     = document.getElementById('level');
+    const categorySelect  = document.getElementById('category');
+    const majorSelect     = document.getElementById('major');
+
     let selectedFile = null;
+
+    /* ---------- โครงสร้างข้อมูล ระดับ -> ประเภทวิชา -> สาขาวิชา ---------- */
+    const majorData = {
+        'ปวช.': {
+            'บริหารธุรกิจ': [
+                'สาขาวิชาบัญชี',
+                'สาขาวิชาการตลาด',
+                'สาขาวิชาธุรกิจค้าปลีก',
+                'สาขาวิชาภาษาต่างประเทศ'
+            ],
+            'ช่างอุตสาหกรรม': [
+                'สาขาวิชาช่างยนต์ (ภาคปกติ)',
+                'สาขาวิชาช่างไฟฟ้ากำลัง (ภาคปกติ)',
+                'สาขาวิชาช่างอิเล็กทรอนิกส์ (ภาคปกติ)',
+                'สาขาวิชาเมคคาทรอนิกส์ (ภาคปกติ)',
+                'สาขาวิชายานยนต์ไฟฟ้า (ภาคปกติ)'
+            ],
+            'อุตสาหกรรมท่องเที่ยว': [
+                'สาขาวิชาการท่องเที่ยว (ภาคปกติ, ทวิภาคี)'
+            ],
+            'อุตสาหกรรมดิจิทัล และเทคโนโลยีสารสนเทศ': [
+                'สาขาวิชาเทคโนโลยีธุรกิจดิจิทัล (ภาคปกติ, บ่าย)'
+            ],
+            'อุตสาหกรรมโลจิสติกส์': [
+                'สาขาวิชาโลจิสติกส์ (ภาคปกติ)'
+            ],
+            'หลักสูตรสองภาษา (BP)': [
+                'สาขาวิชาภาษาต่างประเทศ (ภาคปกติ)'
+            ]
+        },
+        'ปวส.': {
+            'บริหารธุรกิจ': [
+                'สาขาวิชาบัญชี',
+                'สาขาวิชาการตลาด',
+                'สาขาธุรกิจการค้าระหว่างประเทศ',
+                'สาขาการจัดการธุรกิจค้าปลีก',
+                'สาขาวิชาการจัดการธุรกิจ'
+            ],
+            'ช่างอุตสาหกรรม': [
+                'สาขาวิชาช่างไฟฟ้ากำลัง (ภาคปกติ, ทวิภาคี, บ่าย)',
+                'สาขาวิชาเมคคาทรอนิกส์ (ภาคปกติ)',
+                'สาขาวิชาเทคนิคเครื่องกล (ภาคปกติ, ทวิภาคี, บ่าย)',
+                'สาขาวิชาเทคนิคอุตสาหกรรม (ภาคปกติ, บ่าย)',
+                'สาขาวิชาเทคโนโลยีบริการยานยนต์ (ภาคทวิภาคี)',
+                'สาขาวิชาเทคนิคยานยนต์ไฟฟ้า (ภาคปกติ)'
+            ],
+            'อุตสาหกรรมท่องเที่ยว': [
+                'สาขาวิชาการท่องเที่ยว (ภาคปกติ)',
+                'สาขาวิชาการโรงแรม (ภาคปกติ)',
+                'สาขาวิชาไมซ์และอีเวนต์ (ภาคปกติ)'
+            ],
+            'อุตสาหกรรมดิจิทัล และเทคโนโลยีสารสนเทศ': [
+                'สาขาวิชาเทคโนโลยีธุรกิจดิจิทัล (ภาคปกติ, บ่าย)',
+                'สาขาวิชาเทคโนโลยีคอมพิวเตอร์ (ภาคปกติ)',
+                'สาขาวิชาเทคโนโลยีสารสนเทศ (ภาคปกติ, ทวิภาคี)'
+            ],
+            'อุตสาหกรรมโลจิสติกส์': [
+                'สาขาวิชาการจัดการโลจิสติกส์และซัพพลายเชน (ภาคปกติ, ทวิภาคี, บ่าย)'
+            ],
+            'หลักสูตรสองภาษา (BP)': [
+                'สาขาธุรกิจการค้าระหว่างประเทศ (ภาคปกติ)'
+            ]
+        }
+    };
+
+    /* ---------- เมื่อเลือกระดับการศึกษา ให้เติมตัวเลือก "ประเภทวิชา" ---------- */
+    levelSelect.addEventListener('change', function () {
+        const level = levelSelect.value;
+
+        categorySelect.innerHTML = '';
+        majorSelect.innerHTML = '';
+
+        if (level && majorData[level]) {
+            categorySelect.disabled = false;
+            categorySelect.innerHTML = '<option value="">-- เลือกประเภทวิชา --</option>';
+            Object.keys(majorData[level]).forEach(function (cat) {
+                const opt = document.createElement('option');
+                opt.value = cat;
+                opt.textContent = cat;
+                categorySelect.appendChild(opt);
+            });
+        } else {
+            categorySelect.disabled = true;
+            categorySelect.innerHTML = '<option value="">-- เลือกระดับการศึกษาก่อน --</option>';
+        }
+
+        majorSelect.disabled = true;
+        majorSelect.innerHTML = '<option value="">-- เลือกประเภทวิชาก่อน --</option>';
+
+        clearError('group-level');
+        clearError('group-category');
+        clearError('group-major');
+    });
+
+    /* ---------- เมื่อเลือกประเภทวิชา ให้เติมตัวเลือก "สาขาวิชา" ---------- */
+    categorySelect.addEventListener('change', function () {
+        const level = levelSelect.value;
+        const category = categorySelect.value;
+
+        majorSelect.innerHTML = '';
+
+        if (level && category && majorData[level] && majorData[level][category]) {
+            majorSelect.disabled = false;
+            majorSelect.innerHTML = '<option value="">-- เลือกสาขาวิชา --</option>';
+            majorData[level][category].forEach(function (m) {
+                const opt = document.createElement('option');
+                opt.value = m;
+                opt.textContent = m;
+                majorSelect.appendChild(opt);
+            });
+        } else {
+            majorSelect.disabled = true;
+            majorSelect.innerHTML = '<option value="">-- เลือกประเภทวิชาก่อน --</option>';
+        }
+
+        clearError('group-category');
+        clearError('group-major');
+    });
+
+    majorSelect.addEventListener('change', function () {
+        clearError('group-major');
+    });
 
     /* ---------- ตัวนับตัวอักษรของหมายเหตุ ---------- */
     noteField.addEventListener('input', function () {
@@ -682,7 +804,7 @@ document.addEventListener('DOMContentLoaded', function () {
             clearError('group-' + id);
         });
     });
-    ['major', 'level', 'reqtype'].forEach(function (id) {
+    ['reqtype'].forEach(function (id) {
         document.getElementById(id).addEventListener('change', function () {
             clearError('group-' + id);
         });
@@ -695,8 +817,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const fullname  = document.getElementById('fullname').value.trim();
         const studentid = document.getElementById('studentid').value.trim();
-        const major     = document.getElementById('major').value;
-        const level     = document.getElementById('level').value;
+        const level     = levelSelect.value;
+        const category  = categorySelect.value;
+        const major     = majorSelect.value;
         const phone     = document.getElementById('phone').value.trim();
         const email     = document.getElementById('email').value.trim();
         const reqtype   = document.getElementById('reqtype').value;
@@ -705,14 +828,17 @@ document.addEventListener('DOMContentLoaded', function () {
         if (fullname === '') { showError('group-fullname'); isValid = false; }
         else clearError('group-fullname');
 
-        if (!/^[0-9]{5,10}$/.test(studentid)) { showError('group-studentid'); isValid = false; }
+        if (!/^[0-9]{11}$/.test(studentid)) { showError('group-studentid'); isValid = false; }
         else clearError('group-studentid');
-
-        if (major === '') { showError('group-major'); isValid = false; }
-        else clearError('group-major');
 
         if (level === '') { showError('group-level'); isValid = false; }
         else clearError('group-level');
+
+        if (category === '') { showError('group-category'); isValid = false; }
+        else clearError('group-category');
+
+        if (major === '') { showError('group-major'); isValid = false; }
+        else clearError('group-major');
 
         if (!/^0[0-9]{9}$/.test(phone.replace(/-/g, ''))) { showError('group-phone'); isValid = false; }
         else clearError('group-phone');
@@ -739,11 +865,53 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        /* ---------- จำลองการส่งข้อมูล (ยังไม่เชื่อมกับฐานข้อมูลจริง) ---------- */
-        const refNumber = 'REQ' + Date.now().toString().slice(-8);
-        modalText.textContent =
-            'ระบบได้รับคำร้องของคุณ ' + fullname + ' เรียบร้อยแล้ว หมายเลขคำร้อง: ' + refNumber;
-        successModal.classList.add('show');
+        /* ---------- ส่งข้อมูลจริงไปที่ submit_request.php ---------- */
+        const formData = new FormData();
+        formData.append('fullname', fullname);
+        formData.append('studentid', studentid);
+        formData.append('level', level);
+        formData.append('category', category);
+        formData.append('major', major);
+        formData.append('phone', phone);
+        formData.append('email', email);
+        formData.append('reqtype', reqtype);
+        formData.append('note', noteField.value.trim());
+        formData.append('confirm', confirmChecked ? '1' : '0');
+        formData.append('file', selectedFile);
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'กำลังส่งคำร้อง...';
+
+        fetch('submit_request.php', {
+            method: 'POST',
+            body: formData
+        })
+            .then(function (res) { return res.json(); })
+            .then(function (data) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'ยื่นคำร้อง';
+
+                if (data.success) {
+                    modalText.textContent = data.message;
+                    successModal.classList.add('show');
+                } else if (data.errors) {
+                    // แสดง error รายฟิลด์ที่เซิร์ฟเวอร์ตรวจพบ
+                    Object.keys(data.errors).forEach(function (field) {
+                        const groupId = 'group-' + field;
+                        if (document.getElementById(groupId)) {
+                            showError(groupId);
+                        }
+                    });
+                    alert(Object.values(data.errors).join('\n'));
+                } else {
+                    alert(data.message || 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง');
+                }
+            })
+            .catch(function () {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'ยื่นคำร้อง';
+                alert('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ กรุณาลองใหม่อีกครั้ง');
+            });
     });
 
     modalCloseBtn.addEventListener('click', function () {
@@ -751,6 +919,10 @@ document.addEventListener('DOMContentLoaded', function () {
         form.reset();
         removeFile();
         noteCount.textContent = '0';
+        categorySelect.disabled = true;
+        categorySelect.innerHTML = '<option value="">-- เลือกระดับการศึกษาก่อน --</option>';
+        majorSelect.disabled = true;
+        majorSelect.innerHTML = '<option value="">-- เลือกประเภทวิชาก่อน --</option>';
         document.querySelectorAll('.form-group').forEach(function (g) {
             g.classList.remove('invalid');
         });
@@ -760,6 +932,10 @@ document.addEventListener('DOMContentLoaded', function () {
         form.reset();
         removeFile();
         noteCount.textContent = '0';
+        categorySelect.disabled = true;
+        categorySelect.innerHTML = '<option value="">-- เลือกระดับการศึกษาก่อน --</option>';
+        majorSelect.disabled = true;
+        majorSelect.innerHTML = '<option value="">-- เลือกประเภทวิชาก่อน --</option>';
         document.querySelectorAll('.form-group').forEach(function (g) {
             g.classList.remove('invalid');
         });
